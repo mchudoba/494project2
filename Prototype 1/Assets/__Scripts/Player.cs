@@ -1,18 +1,21 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-[System.Serializable]
-public class Boundary
-{
-	public float xMin, xMax, yMin, yMax;
-}
-
 public class Player : MonoBehaviour
 {
+	/*
+	 * Variables
+	 */
+
+	// Private variables
 	private Vector3		movement = Vector3.zero;
 
+	// Public variables
 	public float		speed;
-	public Boundary		boundary;
+
+	/*
+	 * Unity methods
+	 */
 
 	void Update()
 	{
@@ -22,14 +25,11 @@ public class Player : MonoBehaviour
 	void FixedUpdate()
 	{
 		rigidbody.velocity = movement * speed;
-		
-		rigidbody.position = new Vector3
-		(
-			Mathf.Clamp(rigidbody.position.x, boundary.xMin, boundary.xMax),
-			Mathf.Clamp(rigidbody.position.y, boundary.yMin, boundary.yMax),
-			0f
-		);
 	}
+
+	/*
+	 * Custom methods
+	 */
 
 	// Checks input axes and sets velocity vector
 	void Move()
