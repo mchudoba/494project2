@@ -9,6 +9,8 @@ public class RedEnemy : MonoBehaviour
 
 	// Private variables
 	private Vector3			movement;
+	private Player			player;
+	private int				damage = 1;
 
 	// Public variables
 	public float			speed;
@@ -25,6 +27,9 @@ public class RedEnemy : MonoBehaviour
 			Random.Range(-1f, 1f),
 			0f
 		);
+		movement.Normalize();
+
+		player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
 	}
 
 	void FixedUpdate()
@@ -34,9 +39,10 @@ public class RedEnemy : MonoBehaviour
 
 	void OnCollisionEnter(Collision other)
 	{
-		if (other.gameObject.tag != "Wall")
-			return;
+		if (other.gameObject.tag == "Wall")
+			movement = Vector3.Reflect(movement, other.contacts[0].normal);
 
-		movement = Vector3.Reflect(movement, other.contacts[0].normal);
+		if (other.gameObject.tag == "Player")
+			player.TakeDamage(damage);
 	}
 }

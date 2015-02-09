@@ -12,6 +12,7 @@ public class Player : MonoBehaviour
 
 	// Public variables
 	public float		speed;
+	public int			lives;
 
 	/*
 	 * Unity methods
@@ -30,6 +31,14 @@ public class Player : MonoBehaviour
 	/*
 	 * Custom methods
 	 */
+
+	public void TakeDamage(int damage)
+	{
+		if (lives - damage < 0)
+			lives = 0;
+		else
+			lives -= damage;
+	}
 
 	// Checks input axes and sets velocity vector
 	void Move()
