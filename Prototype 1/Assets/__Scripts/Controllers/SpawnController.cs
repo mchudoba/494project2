@@ -14,7 +14,7 @@ public class SpawnController : MonoBehaviour
 
 	void Start()
 	{
-		InvokeRepeating("SpawnRedEnemy", 0f, redEnemySpawnTime);
+		InvokeRepeating("SpawnRedEnemy", 1f, redEnemySpawnTime);
 	}
 
 	/* -----Custom methods----- */

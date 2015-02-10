@@ -5,15 +5,25 @@ public class Player : MonoBehaviour
 {
 	/* -----Variables----- */
 
+	private const string 		menuScene = "Menu_Scene";
 	private Vector3		movement = Vector3.zero;
+	private bool		waiting = true;
 
 	public float		speed;
 	public int			lives;
+
+	public bool			Waiting
+	{
+		get { return waiting; }
+	}
 
 	/* -----Unity methods----- */
 
 	void Update()
 	{
+		if (Input.GetKeyDown (KeyCode.Escape))
+			Application.LoadLevel(menuScene);
+
 		Move();
 	}
 
@@ -41,5 +51,12 @@ public class Player : MonoBehaviour
 		float horizontal = Input.GetAxis("Horizontal");
 		float vertical = Input.GetAxis("Vertical");
 		movement = new Vector3(horizontal, vertical, 0f);
+
+		if (waiting && (horizontal != 0f || vertical != 0f))
+		{
+			waiting = false;
+			GameController temp = GameObject.Find("_Main Camera").GetComponent<GameController>();
+			temp.Play();
+		}
 	}
 }
