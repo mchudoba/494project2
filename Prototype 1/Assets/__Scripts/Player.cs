@@ -3,20 +3,14 @@ using System.Collections;
 
 public class Player : MonoBehaviour
 {
-	/*
-	 * Variables
-	 */
+	/* -----Variables----- */
 
-	// Private variables
 	private Vector3		movement = Vector3.zero;
 
-	// Public variables
 	public float		speed;
 	public int			lives;
 
-	/*
-	 * Unity methods
-	 */
+	/* -----Unity methods----- */
 
 	void Update()
 	{
@@ -28,16 +22,17 @@ public class Player : MonoBehaviour
 		rigidbody.velocity = movement * speed;
 	}
 
-	/*
-	 * Custom methods
-	 */
+	/* -----Custom methods----- */
 
-	public void TakeDamage(int damage)
+	// Returns true if successful
+	// Should not take damage if damage taken recently
+	public bool TakeDamage(int damage)
 	{
 		if (lives - damage < 0)
 			lives = 0;
 		else
 			lives -= damage;
+		return true;
 	}
 
 	// Checks input axes and sets velocity vector

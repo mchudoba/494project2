@@ -1,48 +1,31 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class RedEnemy : MonoBehaviour
+public class RedEnemy : Enemy
 {
-	/*
-	 * Variables
-	 */
+	/* -----Variables----- */
 
-	// Private variables
-	private Vector3			movement;
-	private Player			player;
-	private int				damage = 1;
-
-	// Public variables
-	public float			speed;
-
-	/*
-	 * Unity methods
-	 */
+	private int thisDamage = 1;
+	
+	/* -----Unity methods----- */
 
 	void Start()
 	{
-		movement = new Vector3
-		(
-			Random.Range(-1f, 1f),
-			Random.Range(-1f, 1f),
-			0f
-		);
-		movement.Normalize();
-
-		player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
-	}
-
-	void FixedUpdate()
-	{
-		rigidbody.velocity = movement * speed;
+		damage = thisDamage;
+		direction = RandomNormalizedDirection();
 	}
 
 	void OnCollisionEnter(Collision other)
 	{
+		// Perfectly elastic bounce on a wall
 		if (other.gameObject.tag == "Wall")
-			movement = Vector3.Reflect(movement, other.contacts[0].normal);
+			direction = Vector3.Reflect(direction, other.contacts[0].normal);
 
+		// Deal damage to the player and destroy this game object
 		if (other.gameObject.tag == "Player")
-			player.TakeDamage(damage);
+		{
+			if (player.TakeDamage(damage))
+				Destroy(this.gameObject);
+		}
 	}
 }

@@ -4,19 +4,14 @@ using System.Collections;
 
 public class UIController : MonoBehaviour
 {
-	/*
-	 * Variables
-	 */
+	/* -----Variables----- */
 
-	// Private variables
 	private Text			lifeText;
 	private Text			timeText;
 	private float			time = 0f;
 	private Player			player;
 
-	/*
-	 * Unity methods
-	 */
+	/* -----Unity methods----- */
 
 	void Start()
 	{
