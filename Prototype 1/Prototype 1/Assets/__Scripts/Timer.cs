@@ -8,6 +8,7 @@ using System.Collections;
  *  started, paused, resumed, restarted, and stopped.
  * Timers can also be set to different values dynamically
  */
+[System.Serializable]
 public class Timer : MonoBehaviour
 {
 	/* -----Variables----- */

@@ -9,7 +9,8 @@ public class MenuController : MonoBehaviour
 	private const string 		gameScene = "Game_Scene";
 	private const string 		menuScene = "Menu_Scene";
 	private Text				highScoreText;
-	private GameObject			areYouSure;
+	//private GameObject			areYouSure;
+	public bool					resetScore = false;
 	
 	/* -----Unity methods----- */
 	
@@ -22,8 +23,17 @@ public class MenuController : MonoBehaviour
 
 		highScoreText = GameObject.Find("HighScoreText").GetComponent<Text>();
 		highScoreText.text = "High Score: " + GameController.bestTime.ToString("F1");
-		areYouSure = GameObject.Find("AreYouSure");
-		areYouSure.SetActive(false);
+		//areYouSure = GameObject.Find("AreYouSure");
+		//areYouSure.SetActive(false);
+	}
+
+	void Update()
+	{
+		if (resetScore)
+		{
+			resetScore = false;
+			ResetYes();
+		}
 	}
 
 	/* -----Custom methods----- */
@@ -35,7 +45,7 @@ public class MenuController : MonoBehaviour
 
 	public void ResetHighScore()
 	{
-		areYouSure.SetActive(true);
+		//areYouSure.SetActive(true);
 	}
 
 	public void ResetYes()
@@ -44,11 +54,11 @@ public class MenuController : MonoBehaviour
 		PlayerPrefs.SetFloat("TimeHighScore", GameController.bestTime);
 		highScoreText.text = "High Score: " + GameController.bestTime.ToString("F1");
 
-		areYouSure.SetActive(false);
+		//areYouSure.SetActive(false);
 	}
 
 	public void ResetNo()
 	{
-		areYouSure.SetActive(false);
+		//areYouSure.SetActive(false);
 	}
 }
