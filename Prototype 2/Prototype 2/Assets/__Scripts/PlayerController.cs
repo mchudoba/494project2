@@ -7,8 +7,11 @@ public class PlayerController : MonoBehaviour
 	private Vector3 direction;
 	private List<Vector3> velList;
 	private bool forwardTime = true;
+	private bool jumping = false;
 
 	public float speed;
+	public float maxHorizontalSpeed;
+	public float jumpSpeed;
 
 	void Start()
 	{
@@ -33,13 +36,32 @@ public class PlayerController : MonoBehaviour
 			forwardTime = true;
 			Move();
 		}
+
+		if (Input.GetAxis("Jump") != 0 && Mathf.Abs(rigidbody.velocity.y) <= 0.1f)
+			jumping = true;
 	}
 
 	void FixedUpdate()
 	{
 		if (forwardTime)
 		{
-			rigidbody.velocity = speed * direction;
+			if (jumping)
+			{
+				jumping = false;
+				Vector3 temp = rigidbody.velocity;
+				temp.y = jumpSpeed;
+				rigidbody.velocity = temp;
+			}
+
+			//rigidbody.velocity = speed * direction;
+			if (Mathf.Abs(rigidbody.velocity.x) <= maxHorizontalSpeed)
+				rigidbody.AddForce(direction * speed);
+			if (direction.x == 0f)
+			{
+				Vector3 temp = rigidbody.velocity;
+				temp.x = 0f;
+				rigidbody.velocity = temp;
+			}
 			velList.Add(rigidbody.velocity);
 		}
 	}
