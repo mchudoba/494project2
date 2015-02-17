@@ -1,12 +1,24 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 [RequireComponent (typeof(BoxCollider))]
 public class PlayerPhysics : MonoBehaviour
 {
+	[System.Serializable]
+	private class State
+	{
+		public bool grounded;
+		public bool movementStopped;
+		public Vector2 position;
+	}
+	private Stack<State> states;
+	[HideInInspector]
+	public static bool reverseTime = false;
+
 	public LayerMask collisionMask;
 
-	private BoxCollider collider;
+	private BoxCollider thisCollider;
 	private Vector3 s;
 	private Vector3 c;
 	private Vector3 originalSize;
@@ -18,7 +30,6 @@ public class PlayerPhysics : MonoBehaviour
 
 	[HideInInspector]
 	public bool grounded;
-
 	[HideInInspector]
 	public bool movementStopped;
 
@@ -27,16 +38,20 @@ public class PlayerPhysics : MonoBehaviour
 	
 	void Start()
 	{
-		collider = GetComponent<BoxCollider>();
+		states = new Stack<State>();
+
+		thisCollider = GetComponent<BoxCollider>();
 		colliderScale = transform.localScale.x;
 		
-		originalSize = collider.size;
-		originalCentre = collider.center;
+		originalSize = thisCollider.size;
+		originalCentre = thisCollider.center;
 		SetCollider(originalSize, originalCentre);
 	}
 	
 	public void Move(Vector2 moveAmount)
 	{
+		if (reverseTime) return;
+
 		float deltaY = moveAmount.y;
 		float deltaX = moveAmount.x;
 		Vector2 p = transform.position;
@@ -116,18 +131,38 @@ public class PlayerPhysics : MonoBehaviour
 		}
 		
 		Vector2 finalTransform = new Vector2(deltaX, deltaY);
-		
 		transform.Translate(finalTransform, Space.World);
+
+		SaveState();
 	}
 	
 	// Set collider
 	public void SetCollider(Vector3 size, Vector3 centre)
 	{
-		collider.size = size;
-		collider.center = centre;
+		thisCollider.size = size;
+		thisCollider.center = centre;
 		
 		s = size * colliderScale;
 		c = centre * colliderScale;
 	}
-	
+
+	private void SaveState()
+	{
+		State state = new State();
+		state.grounded = grounded;
+		state.movementStopped = movementStopped;
+		state.position = transform.position;
+
+		states.Push(state);
+	}
+
+	public void RevertState()
+	{
+		if (states.Count == 0) return;
+
+		State state = states.Pop();
+		grounded = state.grounded;
+		movementStopped = state.movementStopped;
+		transform.position = state.position;
+	}
 }
