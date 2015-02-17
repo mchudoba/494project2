@@ -1,74 +1,76 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
 
+[RequireComponent(typeof(PlayerPhysics))]
 public class PlayerController : MonoBehaviour
-{
-	private Vector3 direction;
-	private List<Vector3> velList;
-	private bool forwardTime = true;
-	private bool jumping = false;
+{	
+	// Player Handling
+	public float gravity = 20;
+	public float speed = 8;
+	public float acceleration = 30;
+	public float jumpHeight = 12;
 
-	public float speed;
-	public float maxHorizontalSpeed;
-	public float jumpSpeed;
+	private float currentSpeed;
+	private float targetSpeed;
+	private Vector2 amountToMove;
+	private PlayerPhysics playerPhysics;
 
 	void Start()
 	{
-		velList = new List<Vector3>();
+		playerPhysics = GetComponent<PlayerPhysics>();
 	}
-
+	
 	void Update()
 	{
-		// Time control
-		if (Input.GetKey(KeyCode.LeftShift) && velList.Count > 0)
+		// Reset acceleration upon collision
+		if (playerPhysics.movementStopped)
 		{
-			forwardTime = false;
-			int lastIndex = velList.Count - 1;
-			Vector3 temp = velList[lastIndex];
-			temp.x *= -1f;
-			temp.y *= -1f;
-			velList.RemoveAt(lastIndex);
-			rigidbody.velocity = temp;
+			targetSpeed = 0;
+			currentSpeed = 0;
+		}
+		
+		// If player is touching the ground
+		if (playerPhysics.grounded)
+		{
+			amountToMove.y = 0;
+			
+			// Jump
+			if (Input.GetButtonDown("Jump"))
+			{
+				amountToMove.y = jumpHeight;	
+			}
+		}
+		
+		// Input
+		targetSpeed = Input.GetAxisRaw("Horizontal") * speed;
+		currentSpeed = IncrementTowards(currentSpeed, targetSpeed, acceleration);
+		
+		// Set amount to move
+		amountToMove.x = currentSpeed;
+		amountToMove.y -= gravity * Time.deltaTime;
+		playerPhysics.Move(amountToMove * Time.deltaTime);
+		
+		// Face Direction
+		float moveDir = Input.GetAxisRaw("Horizontal");
+		if (moveDir != 0)
+		{
+			transform.eulerAngles = (moveDir > 0) ? Vector3.up * 180 : Vector3.zero;
+		}
+		
+	}
+	
+	// Increase n towards target by speed
+	private float IncrementTowards(float n, float target, float a)
+	{
+		if (n == target)
+		{
+			return n;	
 		}
 		else
 		{
-			forwardTime = true;
-			Move();
+			float dir = Mathf.Sign(target - n); // must n be increased or decreased to get closer to target
+			n += a * Time.deltaTime * dir;
+			return (dir == Mathf.Sign(target - n)) ? n : target; // if n has now passed target then return target, otherwise return n
 		}
-
-		if (Input.GetAxis("Jump") != 0 && Mathf.Abs(rigidbody.velocity.y) <= 0.1f)
-			jumping = true;
-	}
-
-	void FixedUpdate()
-	{
-		if (forwardTime)
-		{
-			if (jumping)
-			{
-				jumping = false;
-				Vector3 temp = rigidbody.velocity;
-				temp.y = jumpSpeed;
-				rigidbody.velocity = temp;
-			}
-
-			//rigidbody.velocity = speed * direction;
-			if (Mathf.Abs(rigidbody.velocity.x) <= maxHorizontalSpeed)
-				rigidbody.AddForce(direction * speed);
-			if (direction.x == 0f)
-			{
-				Vector3 temp = rigidbody.velocity;
-				temp.x = 0f;
-				rigidbody.velocity = temp;
-			}
-			velList.Add(rigidbody.velocity);
-		}
-	}
-
-	void Move()
-	{
-		float horizontal = Input.GetAxis("Horizontal");
-		direction = new Vector3(horizontal, 0f, 0f);
 	}
 }
