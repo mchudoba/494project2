@@ -11,10 +11,13 @@ public class PlayerController : MonoBehaviour
 		public float currentSpeed;
 		public float targetSpeed;
 		public Vector2 amountToMove;
+		public Vector2 position;
+		public Vector3 rotation;
 	}
 	private Stack<State> states;
 	[HideInInspector]
 	public static bool reverseTime = false;
+	[HideInInspector]
 
 	// Player Handling
 	public float gravity = 20;
@@ -35,7 +38,7 @@ public class PlayerController : MonoBehaviour
 	
 	void Update()
 	{
-		if (reverseTime) return;
+		if (reverseTime || TimeController.playerDead) return;
 		// Reset acceleration upon collision
 		if (playerPhysics.movementStopped)
 		{
@@ -57,7 +60,10 @@ public class PlayerController : MonoBehaviour
 		
 		// Input
 		targetSpeed = Input.GetAxisRaw("Horizontal") * speed;
-		currentSpeed = IncrementTowards(currentSpeed, targetSpeed, acceleration);
+		if (targetSpeed != 0f || !playerPhysics.grounded)
+			currentSpeed = IncrementTowards(currentSpeed, targetSpeed, acceleration);
+		else
+			currentSpeed = 0f;
 		
 		// Set amount to move
 		amountToMove.x = currentSpeed;
@@ -72,6 +78,12 @@ public class PlayerController : MonoBehaviour
 		}
 
 		SaveState();
+	}
+
+	void OnTriggerEnter(Collider other)
+	{
+		if (other.tag == "Deadly")
+			TimeController.KillPlayer();
 	}
 	
 	// Increase n towards target by speed
@@ -95,6 +107,8 @@ public class PlayerController : MonoBehaviour
 		state.currentSpeed = currentSpeed;
 		state.targetSpeed = targetSpeed;
 		state.amountToMove = amountToMove;
+		state.position = transform.position;
+		state.rotation = transform.eulerAngles;
 
 		states.Push(state);
 	}
@@ -107,5 +121,7 @@ public class PlayerController : MonoBehaviour
 		currentSpeed = state.currentSpeed;
 		targetSpeed = state.targetSpeed;
 		amountToMove = state.amountToMove;
+		transform.position = state.position;
+		transform.eulerAngles = state.rotation;
 	}
 }
