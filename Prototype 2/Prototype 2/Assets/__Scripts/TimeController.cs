@@ -29,7 +29,7 @@ public class TimeController : MonoBehaviour
 		cameraNormalColor = cam.backgroundColor;
 		cameraReverseColor = new Color(0.5f, 0.5f, 0.5f, 0f);
 
-		GameObject player = GameObject.Find("Player").gameObject;
+		GameObject player = GameObject.Find("Player1").gameObject;
 		playerMat = player.GetComponentInChildren<Renderer>();
 		playerNormalColor = playerMat.material.color;
 		playerDeadColor = Color.red;
