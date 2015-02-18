@@ -13,7 +13,6 @@ public class PlayerPhysics : MonoBehaviour
 	}
 	private Stack<State> states;
 	[HideInInspector]
-	public static bool reverseTime = false;
 
 	public LayerMask collisionMask;
 
@@ -49,7 +48,7 @@ public class PlayerPhysics : MonoBehaviour
 	
 	public void Move(Vector2 moveAmount)
 	{
-		if (reverseTime || TimeController.playerDead) return;
+		if (TimeController.Rewind) return;
 
 		float deltaY = moveAmount.y;
 		float deltaX = moveAmount.x;
@@ -82,8 +81,6 @@ public class PlayerPhysics : MonoBehaviour
 					deltaY = 0;
 				}
 				grounded = true;
-				if (hit.transform.gameObject.tag == "Deadly")
-					TimeController.KillPlayer();
 				break;
 			}
 		}
@@ -114,8 +111,6 @@ public class PlayerPhysics : MonoBehaviour
 					deltaX = 0;
 				}
 				movementStopped = true;
-				if (hit.transform.gameObject.tag == "Deadly")
-					TimeController.KillPlayer();
 				break;
 			}
 		}
@@ -131,8 +126,6 @@ public class PlayerPhysics : MonoBehaviour
 			{
 				grounded = true;
 				deltaY = 0;
-				if (hit.transform.gameObject.tag == "Deadly")
-					TimeController.KillPlayer();
 			}
 		}
 		

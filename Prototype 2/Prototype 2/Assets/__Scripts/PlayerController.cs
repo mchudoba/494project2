@@ -16,10 +16,12 @@ public class PlayerController : MonoBehaviour
 	}
 	private Stack<State> states;
 	[HideInInspector]
-	public static bool reverseTime = false;
-	[HideInInspector]
+
+	// Prefabs
+	public GameObject bulletPrefab;
 
 	// Player Handling
+	public bool facing_left = false;
 	public float gravity = 20;
 	public float speed = 8;
 	public float acceleration = 30;
@@ -30,15 +32,40 @@ public class PlayerController : MonoBehaviour
 	private Vector2 amountToMove;
 	private PlayerPhysics playerPhysics;
 
+	// Id-related variables
+	[HideInInspector]
+	public int id = 0;
+	private string horizontal;
+	private string jump;
+	private string reverse;
+	private string fire;
+
+	// Health and damage
+	public int maxHealth = 5;
+	public int health;
+	private float fireTimer = 0f;
+	public float fireTimerVal;
+
 	void Start()
 	{
 		states = new Stack<State>();
 		playerPhysics = GetComponent<PlayerPhysics>();
+
+		horizontal = "Horizontal" + id;
+		jump = "Jump" + id;
+		reverse = "Reverse" + id;
+		fire = "Fire" + id;
+
+		health = maxHealth;
 	}
 	
 	void Update()
 	{
-		if (reverseTime || TimeController.playerDead) return;
+		if (TimeController.Rewind) return;
+
+		if (fireTimer > 0f)
+			fireTimer -= Time.deltaTime;
+
 		// Reset acceleration upon collision
 		if (playerPhysics.movementStopped)
 		{
@@ -52,14 +79,15 @@ public class PlayerController : MonoBehaviour
 			amountToMove.y = 0;
 			
 			// Jump
-			if (Input.GetButtonDown("Jump"))
+			if (Input.GetButtonDown(jump))
 			{
 				amountToMove.y = jumpHeight;	
 			}
 		}
 		
 		// Input
-		targetSpeed = Input.GetAxisRaw("Horizontal") * speed;
+		float moveDir = Input.GetAxisRaw(horizontal);
+		targetSpeed = moveDir * speed;
 		if (targetSpeed != 0f || !playerPhysics.grounded)
 			currentSpeed = IncrementTowards(currentSpeed, targetSpeed, acceleration);
 		else
@@ -71,19 +99,36 @@ public class PlayerController : MonoBehaviour
 		playerPhysics.Move(amountToMove * Time.deltaTime);
 
 		// Face Direction
-		float moveDir = Input.GetAxisRaw("Horizontal");
 		if (moveDir != 0)
 		{
 			transform.eulerAngles = (moveDir > 0) ? Vector3.up * 180 : Vector3.zero;
+		}
+		if (transform.eulerAngles == Vector3.zero)
+			facing_left = true;
+		else
+			facing_left = false;
+
+		if (Input.GetButtonDown(fire) && fireTimer <= 0)
+		{
+			fireTimer = fireTimerVal;
+			Fire();
 		}
 
 		SaveState();
 	}
 
+	void LateUpdate()
+	{
+		if (Input.GetButton(reverse))
+			TimeController.Rewind = true;
+		if (Input.GetButtonUp(reverse))
+			TimeController.Rewind = false;
+	}
+
 	void OnTriggerEnter(Collider other)
 	{
 		if (other.tag == "Deadly")
-			TimeController.KillPlayer();
+			return;// damage
 	}
 	
 	// Increase n towards target by speed
@@ -99,6 +144,19 @@ public class PlayerController : MonoBehaviour
 			n += a * Time.deltaTime * dir;
 			return (dir == Mathf.Sign(target - n)) ? n : target; // if n has now passed target then return target, otherwise return n
 		}
+	}
+
+	private void Fire()
+	{
+		Vector3 pos = transform.position;
+		pos.y += transform.lossyScale.y / 3f;
+		if (facing_left)
+			pos.x -= 1f;
+		else
+			pos.x += 1f;
+
+		GameObject bullet = Instantiate(bulletPrefab, pos, Quaternion.identity) as GameObject;
+		bullet.GetComponent<BulletObj>().SetDirection(facing_left);
 	}
 
 	private void SaveState()

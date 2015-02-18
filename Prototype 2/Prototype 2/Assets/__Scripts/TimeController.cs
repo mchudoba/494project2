@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class TimeController : MonoBehaviour
 {
@@ -11,17 +12,19 @@ public class TimeController : MonoBehaviour
 	private float colorLerp = 0f;
 
 	// Player variables
-	private Renderer playerMat;
-	private Color playerNormalColor;
-	private Color playerDeadColor;
-
-	// Objects that have states to be reverted to
-	private PlayerController playerController;
-	private PlayerPhysics playerPhysics;
+	private class Player
+	{
+		public Renderer render;
+		public Color normalColor;
+		public Color deadColor;
+		public PlayerController controller;
+		public PlayerPhysics physics;
+	}
+	private List<Player> players;
 
 	[HideInInspector]
-	public static bool playerDead = false;
-	private static bool internalDead = false;
+	public static bool Rewind = false;
+	private int numPlayers;
 
 	void Start()
 	{
@@ -29,38 +32,37 @@ public class TimeController : MonoBehaviour
 		cameraNormalColor = cam.backgroundColor;
 		cameraReverseColor = new Color(0.5f, 0.5f, 0.5f, 0f);
 
-		GameObject player = GameObject.Find("Player1").gameObject;
-		playerMat = player.GetComponentInChildren<Renderer>();
-		playerNormalColor = playerMat.material.color;
-		playerDeadColor = Color.red;
-
-		playerController = player.GetComponent<PlayerController>();
-		playerPhysics = player.GetComponent<PlayerPhysics>();
+		PlayerSetup();
 	}
 
 	void LateUpdate()
 	{
-		if (internalDead && !playerDead)
-		{
-			playerDead = true;
-			playerMat.material.color = playerDeadColor;
-		}
-
-		if (Input.GetKey(KeyCode.LeftShift))
+		if (Rewind)
 		{
 			ReverseTime();
-			playerDead = false;
-			internalDead = false;
-			playerMat.material.color = playerNormalColor;
 		}
 		else if (colorLerp > 0f)
 		{
 			cam.backgroundColor = Color.Lerp(cameraNormalColor, cameraReverseColor, colorLerp);
 			colorLerp -= Time.deltaTime / duration;
 		}
-		if (Input.GetKeyUp(KeyCode.LeftShift))
+	}
+
+	void PlayerSetup()
+	{
+		numPlayers = GameController.numPlayers;
+		players = new List<Player>();
+		for (int i = 1; i <= numPlayers; i++)
 		{
-			ResumeTime();
+			Player curPlayer = new Player();
+			GameObject playerObj = GameObject.Find("Player" + i).gameObject;
+			curPlayer.render = playerObj.GetComponentInChildren<Renderer>();
+			curPlayer.normalColor = curPlayer.render.material.color;
+			curPlayer.deadColor = Color.red;
+			curPlayer.controller = playerObj.GetComponent<PlayerController>();
+			curPlayer.physics = playerObj.GetComponent<PlayerPhysics>();
+
+			players.Add(curPlayer);
 		}
 	}
 
@@ -70,21 +72,10 @@ public class TimeController : MonoBehaviour
 		if (colorLerp < 1f)
 			colorLerp += Time.deltaTime / duration;
 
-		PlayerPhysics.reverseTime = true;
-		PlayerController.reverseTime = true;
-
-		playerController.RevertState();
-		playerPhysics.RevertState();
-	}
-
-	void ResumeTime()
-	{
-		PlayerPhysics.reverseTime = false;
-		PlayerController.reverseTime = false;
-	}
-
-	public static void KillPlayer()
-	{
-		internalDead = true;
+		for (int i = 0; i < players.Count; i++)
+		{
+			players[i].controller.RevertState();
+			players[i].physics.RevertState();
+		}
 	}
 }

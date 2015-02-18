@@ -10,7 +10,7 @@ public class PlayerSpawn : MonoBehaviour
 	public bool initialSpawn = false;
 	public int initialPlayerNumber = 0;
 
-	void Start()
+	void Awake()
 	{
 		if (id == 0)
 			Debug.LogError("id not set for spawn point", this.gameObject);

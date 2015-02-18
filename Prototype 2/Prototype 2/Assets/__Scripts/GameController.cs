@@ -7,8 +7,9 @@ public class GameController : MonoBehaviour
 	private List<PlayerSpawn> playerSpawnPoints;
 
 	public GameObject playerPrefab;
+	public static int numPlayers = 2;
 
-	void Start()
+	void Awake()
 	{
 		playerSpawnPoints = new List<PlayerSpawn>();
 		GameObject[] temp = GameObject.FindGameObjectsWithTag("PlayerSpawn");
@@ -35,8 +36,10 @@ public class GameController : MonoBehaviour
 			Debug.LogError("Incorrect initial player spawn setup");
 
 		GameObject player1 = Instantiate(playerPrefab, playerSpawnPoints[index1].pos, Quaternion.identity) as GameObject;
+		player1.GetComponent<PlayerController>().id = 1;
 		player1.name = "Player1";
 		GameObject player2 = Instantiate(playerPrefab, playerSpawnPoints[index2].pos, Quaternion.identity) as GameObject;
+		player2.GetComponent<PlayerController>().id = 2;
 		player2.name = "Player2";
 		
 		player2.GetComponentInChildren<Renderer>().material.color = Color.red;
