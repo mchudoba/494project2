@@ -5,6 +5,8 @@ public class PlayerSpawn : MonoBehaviour
 {
 	[HideInInspector]
 	public Vector3 pos;
+	[HideInInspector]
+	public bool occupied = false;
 
 	public int id = 0;
 	public bool initialSpawn = false;

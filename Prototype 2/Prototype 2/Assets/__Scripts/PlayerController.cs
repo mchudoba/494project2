@@ -13,12 +13,16 @@ public class PlayerController : MonoBehaviour
 		public Vector2 amountToMove;
 		public Vector2 position;
 		public Vector3 rotation;
+		public bool canDoubleJump;
 	}
 	private Stack<State> states;
 	[HideInInspector]
 
-	// Prefabs
+	// Prefabs and object references
 	public GameObject bulletPrefab;
+	private GameController gameController;
+	private PlayerPhysics playerPhysics;
+	private Renderer playerRend;
 
 	// Player Handling
 	public bool facing_left = false;
@@ -30,7 +34,9 @@ public class PlayerController : MonoBehaviour
 	private float currentSpeed;
 	private float targetSpeed;
 	private Vector2 amountToMove;
-	private PlayerPhysics playerPhysics;
+	[HideInInspector]
+	public bool canDoubleJump = false;
+	private bool doubleJumped = false;
 
 	// Id-related variables
 	[HideInInspector]
@@ -40,16 +46,31 @@ public class PlayerController : MonoBehaviour
 	private string reverse;
 	private string fire;
 
-	// Health and damage
-	public int maxHealth = 5;
+	// Health, damage, rewind ability
+	public int maxHealth = 100;
+	[HideInInspector]
 	public int health;
+	public int maxLives = 3;
+	[HideInInspector]
+	public int lives;
+	[HideInInspector]
+	public float rewindTimeLeft;
+	public float rewindTime;
+	private bool canRewind = true;
 	private float fireTimer = 0f;
 	public float fireTimerVal;
+	private float invincibleTimer;
+	private float invincibleTimerVal = 3f;
+
+	// Cosmetic
+	private Color color;
 
 	void Start()
 	{
 		states = new Stack<State>();
 		playerPhysics = GetComponent<PlayerPhysics>();
+		playerRend = gameObject.GetComponentInChildren<Renderer>();
+		gameController = GameObject.Find("_Main Camera").GetComponent<GameController>();
 
 		horizontal = "Horizontal" + id;
 		jump = "Jump" + id;
@@ -57,6 +78,10 @@ public class PlayerController : MonoBehaviour
 		fire = "Fire" + id;
 
 		health = maxHealth;
+		lives = maxLives;
+		rewindTimeLeft = rewindTime;
+
+		color = playerRend.material.color;
 	}
 	
 	void Update()
@@ -65,6 +90,14 @@ public class PlayerController : MonoBehaviour
 
 		if (fireTimer > 0f)
 			fireTimer -= Time.deltaTime;
+		if (rewindTimeLeft < rewindTime)
+			rewindTimeLeft = Mathf.Clamp(rewindTimeLeft + (Time.deltaTime / 2f), 0f, rewindTime);
+		if (rewindTimeLeft == rewindTime)
+			canRewind = true;
+		if (invincibleTimer > 0f)
+			invincibleTimer -= Time.deltaTime;
+		else
+			playerRend.material.color = color;
 
 		// Reset acceleration upon collision
 		if (playerPhysics.movementStopped)
@@ -77,11 +110,23 @@ public class PlayerController : MonoBehaviour
 		if (playerPhysics.grounded)
 		{
 			amountToMove.y = 0;
+			canDoubleJump = false;
+			doubleJumped = false;
 			
 			// Jump
 			if (Input.GetButtonDown(jump))
 			{
-				amountToMove.y = jumpHeight;	
+				amountToMove.y = jumpHeight;
+				canDoubleJump = true;
+			}
+		}
+		else if (canDoubleJump && !doubleJumped)
+		{
+			if (Input.GetButtonDown(jump))
+			{
+				amountToMove.y = jumpHeight;
+				canDoubleJump = false;
+				doubleJumped = true;
 			}
 		}
 		
@@ -119,18 +164,20 @@ public class PlayerController : MonoBehaviour
 
 	void LateUpdate()
 	{
-		if (Input.GetButton(reverse))
+		if (Input.GetButton(reverse) && canRewind)
+		{
 			TimeController.Rewind = true;
-		if (Input.GetButtonUp(reverse))
+			rewindTimeLeft = Mathf.Clamp(rewindTimeLeft - Time.deltaTime, 0f, rewindTime);
+			if (rewindTimeLeft == 0f)
+				canRewind = false;
+		}
+		if (Input.GetButtonUp(reverse) || canRewind == false)
+		{
 			TimeController.Rewind = false;
+			canRewind = false;
+		}
 	}
 
-	void OnTriggerEnter(Collider other)
-	{
-		if (other.tag == "Deadly")
-			return;// damage
-	}
-	
 	// Increase n towards target by speed
 	private float IncrementTowards(float n, float target, float a)
 	{
@@ -157,6 +204,36 @@ public class PlayerController : MonoBehaviour
 
 		GameObject bullet = Instantiate(bulletPrefab, pos, Quaternion.identity) as GameObject;
 		bullet.GetComponent<BulletObj>().SetDirection(facing_left);
+		bullet.GetComponent<Renderer>().material.color = color;
+	}
+
+	public void DealDamage(int dmg)
+	{
+		if (invincibleTimer > 0f) return;
+
+		if (health - dmg >= 0) health -= dmg;
+		else health = 0;
+
+		if (health == 0) Respawn();
+	}
+
+	private void Respawn()
+	{
+		lives = Mathf.Clamp(lives - 1, 0, maxLives);
+		if (lives == 0)
+		{
+			gameController.GameOver();
+			return;
+		}
+
+		health = maxHealth;
+		transform.position = gameController.RandomSpawnLocation();
+		Color col = playerRend.material.color;
+		col.a = 0.25f;
+		playerRend.material.color = col;
+		invincibleTimer = invincibleTimerVal;
+
+		states.Clear();
 	}
 
 	private void SaveState()
@@ -167,6 +244,7 @@ public class PlayerController : MonoBehaviour
 		state.amountToMove = amountToMove;
 		state.position = transform.position;
 		state.rotation = transform.eulerAngles;
+		state.canDoubleJump = canDoubleJump;
 
 		states.Push(state);
 	}
@@ -181,5 +259,6 @@ public class PlayerController : MonoBehaviour
 		amountToMove = state.amountToMove;
 		transform.position = state.position;
 		transform.eulerAngles = state.rotation;
+		canDoubleJump = state.canDoubleJump;
 	}
 }

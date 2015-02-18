@@ -12,11 +12,10 @@ public class PlayerPhysics : MonoBehaviour
 		public bool movementStopped;
 	}
 	private Stack<State> states;
-	[HideInInspector]
 
 	public LayerMask collisionMask;
-
 	private BoxCollider thisCollider;
+	private PlayerController playerController;
 	private Vector3 s;
 	private Vector3 c;
 	private Vector3 originalSize;
@@ -40,6 +39,7 @@ public class PlayerPhysics : MonoBehaviour
 
 		thisCollider = GetComponent<BoxCollider>();
 		colliderScale = transform.localScale.x;
+		playerController = GetComponent<PlayerController>();
 		
 		originalSize = thisCollider.size;
 		originalCenter = thisCollider.center;
@@ -131,6 +131,9 @@ public class PlayerPhysics : MonoBehaviour
 		
 		Vector2 finalTransform = new Vector2(deltaX, deltaY);
 		transform.Translate(finalTransform, Space.World);
+
+		if (!grounded)
+			playerController.canDoubleJump = true;
 
 		SaveState();
 	}

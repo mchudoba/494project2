@@ -19,6 +19,12 @@ public class GameController : MonoBehaviour
 		InitialSpawn();
 	}
 
+	void Update()
+	{
+		if (Input.GetButton("Cancel"))
+			Application.LoadLevel("Menu_Scene");
+	}
+
 	void InitialSpawn()
 	{
 		int index1 = -1;
@@ -43,5 +49,16 @@ public class GameController : MonoBehaviour
 		player2.name = "Player2";
 		
 		player2.GetComponentInChildren<Renderer>().material.color = Color.red;
+	}
+
+	public Vector3 RandomSpawnLocation()
+	{
+		int rand = Random.Range(0, playerSpawnPoints.Count);
+		return playerSpawnPoints[rand].transform.position;
+	}
+
+	public void GameOver()
+	{
+		Application.LoadLevel("Game_Scene");
 	}
 }
