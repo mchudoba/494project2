@@ -15,13 +15,13 @@
 		<script type="text/javascript">
 		<!--
 			var config = {
-				width: 960, 
+				width: 960,
 				height: 540,
 				params: { enableDebugging:"0" }
-				
+
 			};
 			var u = new UnityObject2(config);
-			
+
 			jQuery(function() {
 
 				var $missingScreen = jQuery("#unityPlayer").find(".missing");
@@ -81,7 +81,7 @@
 			font-weight: bold;
 		}
 		p.footer {
-			font-size: x-small;
+			font-size: medium;
 		}
 		div.content {
 			margin: auto;
@@ -126,6 +126,19 @@
 				</div>
 			</div>
 		</div>
-		<p class="footer">&laquo; created with <a href="http://unity3d.com/unity/" title="Go to unity3d.com">Unity</a> &raquo;</p>
+		<p class="footer">
+			Controls:<br/><br/>
+			Player 1: (Use WASD)<br/>
+			Move: A D<br/>
+			Jump: W (tap twice to Double Jump)<br/>
+			Rewind Time: S<br/>
+			Shoot: E or Q<br/><br/>
+			Player 2: (Use IJKL)<br/>
+			Move: J L<br/>
+			Jump: I (tap twice to Double Jump)<br/>
+			Rewind Time: K<br/>
+			Shoot: O or U<br/><br/>
+			Keyboard controls are awkward. Sorry about that.
+		</p>
 	</body>
 </html>
