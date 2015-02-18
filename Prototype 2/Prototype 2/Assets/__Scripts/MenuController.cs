@@ -3,8 +3,18 @@ using System.Collections;
 
 public class MenuController : MonoBehaviour
 {
-	public void StartGame()
+	public void StartLevel1()
 	{
-		Application.LoadLevel("Game_Scene");
+		Application.LoadLevel("Level_1");
+	}
+
+	public void StartLevel2()
+	{
+		Application.LoadLevel("Level_2");
+	}
+
+	public void StartDemo()
+	{
+		Application.LoadLevel("Level_Demo");
 	}
 }

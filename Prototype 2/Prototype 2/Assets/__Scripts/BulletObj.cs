@@ -15,10 +15,11 @@ public class BulletObj : MonoBehaviour
 
 	void Update()
 	{
-		if (TimeController.Rewind) return;
+		float curSpeed = speed;
+		if (TimeController.Rewind) curSpeed *= 0.1f;
 
 		Vector3 pos = transform.position;
-		pos.x += speed * Time.deltaTime;
+		pos.x += curSpeed * Time.deltaTime;
 		transform.position = pos;
 	}
 

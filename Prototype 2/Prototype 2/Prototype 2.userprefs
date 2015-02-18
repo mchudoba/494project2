@@ -1,14 +1,11 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\__Scripts\GameController.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\__Scripts\FollowCam.cs">
     <Files>
-      <File FileName="Assets\__Scripts\BulletObj.cs" Line="9" Column="12" />
-      <File FileName="Assets\__Scripts\PlayerPhysics.cs" Line="16" Column="33" />
-      <File FileName="Assets\__Scripts\GameController.cs" Line="56" Column="36" />
-      <File FileName="Assets\__Scripts\PlayerController.cs" Line="212" Column="36" />
+      <File FileName="Assets\__Scripts\GameController.cs" Line="15" Column="72" />
+      <File FileName="Assets\__Scripts\MenuController.cs" Line="18" Column="36" />
+      <File FileName="Assets\__Scripts\FollowCam.cs" Line="20" Column="63" />
       <File FileName="Assets\__Scripts\TimeController.cs" Line="1" Column="1" />
-      <File FileName="Assets\__Scripts\PlayerSpawn.cs" Line="20" Column="3" />
-      <File FileName="Assets\__Scripts\UIController.cs" Line="35" Column="90" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

@@ -59,6 +59,6 @@ public class GameController : MonoBehaviour
 
 	public void GameOver()
 	{
-		Application.LoadLevel("Game_Scene");
+		Application.LoadLevel("Menu_Scene");
 	}
 }
