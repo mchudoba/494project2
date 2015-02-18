@@ -1,11 +1,8 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\__Scripts\FollowCam.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\__Scripts\MenuController.cs">
     <Files>
-      <File FileName="Assets\__Scripts\GameController.cs" Line="15" Column="72" />
-      <File FileName="Assets\__Scripts\MenuController.cs" Line="18" Column="36" />
-      <File FileName="Assets\__Scripts\FollowCam.cs" Line="20" Column="63" />
-      <File FileName="Assets\__Scripts\TimeController.cs" Line="1" Column="1" />
+      <File FileName="Assets\__Scripts\MenuController.cs" Line="24" Column="55" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

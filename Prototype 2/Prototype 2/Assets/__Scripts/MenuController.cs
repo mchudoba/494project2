@@ -17,4 +17,10 @@ public class MenuController : MonoBehaviour
 	{
 		Application.LoadLevel("Level_Demo");
 	}
+
+	void Update()
+	{
+		if (Input.GetButtonDown("Cancel"))
+			Application.LoadLevel(Application.loadedLevelName);
+	}
 }
