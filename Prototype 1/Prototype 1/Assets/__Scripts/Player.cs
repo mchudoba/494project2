@@ -29,7 +29,7 @@ public class Player : MonoBehaviour
 
 	void FixedUpdate()
 	{
-		rigidbody.velocity = movement * speed;
+		GetComponent<Rigidbody>().velocity = movement * speed;
 	}
 
 	/* -----Custom methods----- */

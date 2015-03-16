@@ -45,7 +45,7 @@ public class Enemy : MonoBehaviour
 
 	void FixedUpdate()
 	{
-		rigidbody.velocity = speed * _direction;
+		GetComponent<Rigidbody>().velocity = speed * _direction;
 	}
 
 	/* -----Custom methods----- */

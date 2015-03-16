@@ -20,7 +20,7 @@ public class GreenEnemy : Enemy
 	void FixedUpdate()
 	{
 		direction = HomingDirection();
-		rigidbody.velocity = speed * direction;
+		GetComponent<Rigidbody>().velocity = speed * direction;
 	}
 
 	void OnCollisionEnter(Collision other)
